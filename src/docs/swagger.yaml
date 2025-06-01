@@ -1,0 +1,231 @@
+openapi: 3.0.0
+info:
+  title: API de Artículos
+  version: 1.0.0
+  description: API para gestión de artículos
+
+servers:
+  - url: http://localhost:3000
+    description: Servidor local
+
+
+security:
+  - bearerAuth: []
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Articulo:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        nombre:
+          type: string
+          example: Ejemplo
+        fecha_modif:
+          type: string
+          format: date-time
+          example: '2025-05-31T18:25:43.511Z'
+        marca:
+          type: string
+          example: MarcaX
+        estado:
+          type: boolean
+          example: true
+      required:
+        - id
+        - nombre
+        - marca
+        - estado
+    CrearArticulo:
+      type: object
+      properties:
+        nombre:
+          type: string
+          example: Ejemplo
+        marca:
+          type: string
+          example: MarcaX
+        estado:
+          type: boolean
+          example: true
+      required:
+        - nombre
+        - marca
+        - estado
+    LoginRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          example: administrador@gmail.com
+        password:
+          type: string
+          example: miContrasena123
+      required:
+        - email
+        - password
+
+    LoginResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+
+paths:
+
+  /auth/login:
+    post:
+      tags:
+        - Auth
+      summary: Login de usuario y obtención de token JWT, Necesario para acceder a cualquier endpoint de la API
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Token JWT generado correctamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '401':
+          description: Credenciales inválidas
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Usuario o contraseña incorrectos
+
+  /articulo:
+    get:
+      tags:
+        - Artículos
+      summary: Obtener todos los artículos
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Lista de artículos
+          content:
+            application/json: {}
+
+  /articulo/{id}:
+    get:
+      tags:
+        - Artículos
+      summary: Obtener un artículo por ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Artículo encontrado
+        '404':
+          description: Artículo no encontrado
+
+    put:
+      tags:
+        - Artículos
+      summary: Actualizar un artículo por ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Articulo'
+      responses:
+        '200':
+          description: Artículo actualizado
+        '400':
+          description: Solicitud inválida
+        '404':
+          description: Artículo no encontrado
+
+    delete:
+      tags:
+        - Artículos
+      summary: Dar de baja un artículo
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Artículo dado de baja
+        '404':
+          description: Artículo no encontrado
+
+  /articulo/estado/{estado}:
+    get:
+      tags:
+        - Artículos
+      summary: Obtener artículos por estado
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: estado
+          in: path
+          required: true
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: Lista filtrada de artículos
+
+  /articulo/new:
+    post:
+      tags:
+        - Artículos
+      summary: Crear un nuevo artículo
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CrearArticulo'
+      responses:
+        '201':
+          description: Artículo creado
+        '400':
+          description: Datos inválidos
+
+tags:
+  - name: Auth
+    description: Autenticación y manejo de usuarios
+
+  - name: Artículos
+    description: Operaciones relacionadas con artículos
