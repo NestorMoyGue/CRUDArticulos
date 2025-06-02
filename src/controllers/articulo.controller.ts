@@ -63,6 +63,27 @@ export async function getByEstado(req: Request, res: Response) {
     }
 }
 
+export async function getByNombre(req: Request, res: Response) {
+    try {
+        const nombre = req.params.nombre;
+        if (nombre === undefined) {
+            throw new BadRequestError('Estado es requerido');
+        }
+        const articulo = await ArticuloService.getByNombre(nombre);
+        console.log('resultado del controller: ', articulo)
+        res.status(200).json(articulo);
+    } catch (error) {
+        if (error instanceof Errors) {
+            return res.status(error.statusCode).json({ message: error.message });
+        } else {
+            console.error('Error desconocido:', error);
+            res.status(500).json({ message: 'Error interno del servidor' });
+        }
+    }
+}
+
+
+
 
 export async function insert(req: Request, res: Response) {
     try {

@@ -37,7 +37,7 @@ export class ArticuloService {
         try {
             let articulos = await ArticuloRepository.getByEstado(estado);
             if (!articulos || articulos.length === 0) {
-                throw new NotFoundError("No se encontraron artículos");
+                throw new NotFoundError("No se encontraron artículos con el estado seleccionado");
             }
 
             return articulos;
@@ -48,6 +48,23 @@ export class ArticuloService {
             throw new Error(`Error al obtener artículos por estado ${estado}`);
         }
     }
+
+    
+    static async getByNombre(nombre: string): Promise<ArticuloAttributes> {
+        try {
+            let articulo = await ArticuloRepository.getByNombre(nombre);
+            if (!articulo) {
+                throw new NotFoundError("No se encontro un artículo con el nombre seleccionado");
+            }
+            return articulo;
+        } catch (error) {
+            if (error instanceof Errors) {
+                throw error;
+            }
+            throw new Error(`Error al obtener artículo con el nombre seleccionado ${nombre}`);
+        }
+    }
+    
 
     static async insert(data: ArticuloAttributes): Promise<ArticuloAttributes> {
         try {

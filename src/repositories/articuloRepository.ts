@@ -32,6 +32,16 @@ export class ArticuloRepository{
     }
 
 
+    
+    static async getByNombre(nombre: string): Promise<ArticuloAttributes> {
+        try {
+          let articulo = await Articulo.findOne({ where: { nombre } });
+          return articulo?.dataValues as ArticuloAttributes
+        } catch (error) {
+          throw new Error(`Error al obtener artículos por nombre:  ${nombre}`);
+        }
+    }
+
     static async insert(data: ArticuloAttributes): Promise<ArticuloAttributes> {
         try {
           let nuevoArticulo = await Articulo.create(data);

@@ -204,6 +204,31 @@ paths:
         '200':
           description: Lista filtrada de artículos
 
+  /articulo/nombre/{nombre}:
+    get:
+      tags:
+        - Artículos
+      summary: Obtener artículos por nombre/descripcion
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: nombre
+          in: path
+          required: true
+          schema:
+            type: string
+            example: Notebook Lenovo
+      responses:
+        '200':
+          description: Artículo encontrado por nombre
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Articulo'
+        '404':
+          description: Artículo no encontrado por nombre
   /articulo/new:
     post:
       tags:
